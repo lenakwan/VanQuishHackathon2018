@@ -10,10 +10,37 @@
   firebase.initializeApp(config);
   var firestore = firebase.firestore();
   var myLat, myLon;
+  var map;
+  var reports;
+
+
+// USER LOCATION TRACKING SECTION
+function showPosition(position) {
+    console.log("Updating my Location: " + position.coords);
+    myLat = position.coords.latitude;
+    myLon = position.coords.longitude;
+}
+function showError(error) {
+    console.log("something failed");
+}
+var options = {
+  enableHighAccuracy: false,
+  timeout: 3000,
+  maximumAge: 0
+};
+
+navigator.geolocation.watchPosition(showPosition, showError, options);
 
 function init(){
     getLocation();
-    timeout();
+    setTimeout(function () {
+        if(myLat == undefined) {
+            timeout();
+        }
+        else {
+            initMap();
+        }
+    }, 1000);
 }
 
 function timeout() {
@@ -42,22 +69,23 @@ function initMap() {
         navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL}
     }
     
-    var map = new google.maps.Map(mapVar, myOptions);
+    map = new google.maps.Map(mapVar, myOptions);
 
-    var reports = [];
+    getReports();    
+}
+
+function getReports() {
+    reports = [];
     firestore.collection("collisions").get().then(
         function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
                 reports.push([doc.data().LatLon, doc.data().Time]);
-                console.log(doc.data().LatLon.latitude + ", " + doc.data().LatLon.longitude);
             })
             addMarkers(map, reports);
         });
-    
 }
 
 function addMarkers(map, reports) {
-    console.log("looping thru stuff");
     for (var i = 0; i<reports.length; i++) {
         var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
         var marker = new google.maps.Marker({position:reportLatLon,
@@ -66,16 +94,28 @@ function addMarkers(map, reports) {
     }
 }
 
+function reportDriver() {
+    firestore.collection("collisions").add({ 
+        LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
+        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
+    });
+
+    getReports();
+}
     
 
 $("#sendData").click(function(){
     myLat = undefined;
+    console.log("HERE");
     getLocation();
     timeout();
+    console.log(myLat);
     firestore.collection("collisions").add({ 
-        LatLon: new firebase.firestore.GeoPoint(1, 2),
+        LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
         Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
     });
+
+    getReports();
     
     // var currentLongitude = position.coords.longitude;
     // var currentLatitude = position.coords.latitude;
@@ -136,12 +176,12 @@ function getLocation() {
     }
 }
 
-function showPosition(position) {
+/*function showPosition(position) {
 
     myLat = position.coords.latitude;
     myLon = position.coords.longitude;
 
-    /*
+    
     var latlon = new google.maps.LatLng(lat, lon)
     var mapVar = document.getElementById("postMap");
     mapVar.style.height = '250px';
@@ -195,10 +235,6 @@ function showPosition(position) {
            console.log("Something went wrong: " + errorThrown);
         }
 
-    });*/
-}
-
-function showError(error) {
-    console.log("something failed");
-}
+    });
+}*/
 
