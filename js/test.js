@@ -32,9 +32,24 @@ var options = {
 
 navigator.geolocation.watchPosition(showPosition, showError, options);
 
+// Refresh map section
+function constantMapRefresh() {
+    setTimeout(function() {
+        if(map != null && map != undefined) {
+            getReports();
+            console.log("Refresh the map!");
+            constantMapRefresh();
+        }
+    }, 5000);
+}
+
+
+
+
 function init(){
     getLocation();
     timeout();
+    constantMapRefresh();
 }
 
 function timeout() {
@@ -68,10 +83,6 @@ function initMap() {
 }
 
 function getReports() {
-    for(var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }
-    markers = [];
     reports = [];
     firestore.collection("collisions").get().then(
         function(querySnapshot) {
@@ -84,11 +95,11 @@ function getReports() {
 }
 
 function addMarkers(map, reports) {
+    var tempMarkerArray = [];
     for (var i = 0; i<reports.length; i++) {
         var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
         var marker = new google.maps.Marker({position:reportLatLon,
             map:map,
-            animation: google.maps.Animation.DROP,
             size: new google.maps.Size(10, 16),
             title:'Dangerous Driver!'});
         var infowindow = new google.maps.InfoWindow({
@@ -98,8 +109,14 @@ function addMarkers(map, reports) {
           infowindow.open(map, marker);
         });
 
-        markers.push(marker);
+        tempMarkerArray.push(marker);
     }
+
+    for(var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = [];
+    marker = tempMarkerArray;
 }
 
 function reportDriver() {
