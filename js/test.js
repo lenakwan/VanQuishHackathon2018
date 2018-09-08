@@ -11,6 +11,7 @@
   var firestore = firebase.firestore();
   var myLat, myLon;
   var map;
+  var markers = [];
   var reports;
 
 
@@ -68,6 +69,10 @@ function initMap() {
 }
 
 function getReports() {
+    for(var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = [];
     reports = [];
     firestore.collection("collisions").get().then(
         function(querySnapshot) {
@@ -76,6 +81,7 @@ function getReports() {
             })
             addMarkers(map, reports);
         });
+
 }
 
 function addMarkers(map, reports) {
@@ -84,6 +90,7 @@ function addMarkers(map, reports) {
         var marker = new google.maps.Marker({position:reportLatLon,
             map:map,
             title:"Dangerous Driver!"});
+        markers.push(marker);
     }
 }
 
