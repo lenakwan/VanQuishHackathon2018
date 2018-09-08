@@ -4,21 +4,20 @@
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="test.css">
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script src="js/test.js"></script>
+	<script src="https://maps.google.com/maps/api/js?key=AIzaSyDyZMvS1qpMKOc7XklQO8k_RzRvmVTQ4eE"></script>
 </head>
 
-<body>
+<body onload="init()">
 	<h1 id="appName">Dangerous Drivers</h1>
 
-	<button id="sendData">Send Report</button>
+	<button id="sendData" onclick="reportDriver()">Send Report</button>
 	<br/>
-	<button id="receiveData">Click to get a map of all data</button>
+	<!-- <button id="receiveData">Click to get a map of all data</button> -->
+
 	<div id="postMap"></div>
 	<div id="receivedMap"></div>
-
-	<script src="js/test.js"></script>
-
-	<script src="https://maps.google.com/maps/api/js?key=AIzaSyDyZMvS1qpMKOc7XklQO8k_RzRvmVTQ4eE"></script>
-
 </body>
 
 </html>
