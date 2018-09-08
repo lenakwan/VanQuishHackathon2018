@@ -95,28 +95,28 @@ function getReports() {
 }
 
 function addMarkers(map, reports) {
-    var tempMarkerArray = [];
     for (var i = 0; i<reports.length; i++) {
+        var needToAdd = true;
         var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
-        var marker = new google.maps.Marker({position:reportLatLon,
-            map:map,
-            size: new google.maps.Size(10, 16),
-            title:'Dangerous Driver!'});
-        var infowindow = new google.maps.InfoWindow({
-          content: 'Dangerous driver reported at:' + "<br />" + reports[i][1],
-        });
-        marker.addListener('click', function() {
-          infowindow.open(map, marker);
-        });
+        for(var j = 0; j < markers.length; j++) {
+            if(markers[j].getPosition() == reportLatLon) {
+                needToAdd = false;
+            }
+        }
+        if(needToAdd) {
+            var marker = new google.maps.Marker({position:reportLatLon,
+                map:map,
+                title:'Dangerous Driver!'});
+            var infowindow = new google.maps.InfoWindow({
+              content: 'Dangerous driver reported at:' + "<br />" + reports[i][1],
+            });
+            marker.addListener('click', function() {
+              infowindow.open(map, marker);
+            });
 
-        tempMarkerArray.push(marker);
+            markers.push(marker);
+        }
     }
-
-    for(var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }
-    markers = [];
-    marker = tempMarkerArray;
 }
 
 function reportDriver() {
