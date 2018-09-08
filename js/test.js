@@ -66,10 +66,17 @@ function addMarkers(map, reports) {
     }
 }
 
+    
+
 $("#sendData").click(function(){
     myLat = undefined;
     getLocation();
     timeout();
+    firestore.collection("collisions").add({ 
+        LatLon: new firebase.firestore.GeoPoint(1, 2),
+        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
+    });
+    
     // var currentLongitude = position.coords.longitude;
     // var currentLatitude = position.coords.latitude;
 
