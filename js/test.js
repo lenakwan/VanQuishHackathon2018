@@ -1,6 +1,75 @@
+// Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyA__unc1EqKKc5k-vQZ54j8DwESmquNU2M",
+    authDomain: "teampocky2018-1536380254596.firebaseapp.com",
+    databaseURL: "https://teampocky2018-1536380254596.firebaseio.com",
+    projectId: "teampocky2018-1536380254596",
+    storageBucket: "teampocky2018-1536380254596.appspot.com",
+    messagingSenderId: "124278017153"
+  };
+  firebase.initializeApp(config);
+  var firestore = firebase.firestore();
+  var myLat, myLon;
+
+function init(){
+    getLocation();
+    timeout();
+}
+
+function timeout() {
+    setTimeout(function () {
+        if(myLat == undefined) {
+            console.log("Timeout-ing");
+            timeout();
+        }
+        else {
+            initMap();
+        }
+    }, 1000);
+}
+
+function initMap() {
+    var latlon = new google.maps.LatLng(myLat, myLon)
+    var mapVar = document.getElementById("postMap");
+    mapVar.style.height = '400px';
+    mapVar.style.width = '500px';
+
+    var myOptions = {
+        center:latlon,
+        zoom:14,
+        mapTypeId:google.maps.MapTypeId.ROADMAP,
+        mapTypeControl:false,
+        navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL}
+    }
+    
+    var map = new google.maps.Map(mapVar, myOptions);
+
+    var reports = [];
+    firestore.collection("collisions").get().then(
+        function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                reports.push([doc.data().LatLon, doc.data().Time]);
+                console.log(doc.data().LatLon.latitude + ", " + doc.data().LatLon.longitude);
+            })
+            addMarkers(map, reports);
+        });
+    
+}
+
+function addMarkers(map, reports) {
+    console.log("looping thru stuff");
+    for (var i = 0; i<reports.length; i++) {
+        var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
+        var marker = new google.maps.Marker({position:reportLatLon,
+            map:map,
+            title:"Dangerous Driver!"});
+    }
+}
 
 $("#sendData").click(function(){
+    myLat = undefined;
     getLocation();
+    timeout();
     // var currentLongitude = position.coords.longitude;
     // var currentLatitude = position.coords.latitude;
 
@@ -62,8 +131,10 @@ function getLocation() {
 
 function showPosition(position) {
 
-    var lat = position.coords.latitude;
-    var lon = position.coords.longitude;
+    myLat = position.coords.latitude;
+    myLon = position.coords.longitude;
+
+    /*
     var latlon = new google.maps.LatLng(lat, lon)
     var mapVar = document.getElementById("postMap");
     mapVar.style.height = '250px';
@@ -117,7 +188,7 @@ function showPosition(position) {
            console.log("Something went wrong: " + errorThrown);
         }
 
-    });
+    });*/
 }
 
 function showError(error) {
