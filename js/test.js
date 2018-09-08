@@ -1,130 +1,6 @@
-// Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyA__unc1EqKKc5k-vQZ54j8DwESmquNU2M",
-    authDomain: "teampocky2018-1536380254596.firebaseapp.com",
-    databaseURL: "https://teampocky2018-1536380254596.firebaseio.com",
-    projectId: "teampocky2018-1536380254596",
-    storageBucket: "teampocky2018-1536380254596.appspot.com",
-    messagingSenderId: "124278017153"
-  };
-  firebase.initializeApp(config);
-  var firestore = firebase.firestore();
-  var myLat, myLon;
-  var map;
-  var markers = [];
-  var reports;
 
-
-// USER LOCATION TRACKING SECTION
-function showPosition(position) {
-    console.log("Updating my Location: " + position.coords.latitude + ", " + position.coords.longitude);
-    myLat = position.coords.latitude;
-    myLon = position.coords.longitude;
-}
-function showError(error) {
-    console.log("something failed");
-}
-var options = {
-  enableHighAccuracy: false,
-  timeout: 5000,
-  maximumAge: 0
-};
-
-navigator.geolocation.watchPosition(showPosition, showError, options);
-
-function init(){
-    getLocation();
-    timeout();
-}
-
-function timeout() {
-    setTimeout(function () {
-        if(myLat == undefined) {
-            timeout();
-        }
-        else {
-            initMap();
-        }
-    }, 1000);
-}
-
-function initMap() {
-    var latlon = new google.maps.LatLng(myLat, myLon)
-    var mapVar = document.getElementById("postMap");
-    mapVar.style.height = '400px';
-    mapVar.style.width = '500px';
-
-    var myOptions = {
-        center:latlon,
-        zoom:14,
-        mapTypeId:google.maps.MapTypeId.ROADMAP,
-        mapTypeControl:false,
-        navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL}
-    }
-    
-    map = new google.maps.Map(mapVar, myOptions);
-
-    getReports();    
-}
-
-function getReports() {
-    for(var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }
-    markers = [];
-    reports = [];
-    firestore.collection("collisions").get().then(
-        function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                reports.push([doc.data().LatLon, doc.data().Time]);
-            })
-            addMarkers(map, reports);
-        });
-
-}
-
-function addMarkers(map, reports) {
-    for (var i = 0; i<reports.length; i++) {
-        var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
-        var marker = new google.maps.Marker({position:reportLatLon,
-            map:map,
-            animation: google.maps.Animation.DROP,
-            size: new google.maps.Size(10, 16),
-            title:'Dangerous Driver!'});
-        var infowindow = new google.maps.InfoWindow({
-          content: 'Dangerous driver reported at:' + "<br />" + reports[i][1],
-        });
-        marker.addListener('click', function() {
-          infowindow.open(map, marker);
-        });
-
-        markers.push(marker);
-    }
-}
-
-function reportDriver() {
-    firestore.collection("collisions").add({ 
-        LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
-        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
-    });
-
-    getReports();
-}
-    
-/*
 $("#sendData").click(function(){
-    myLat = undefined;
-    console.log("HERE");
     getLocation();
-    timeout();
-    console.log(myLat);
-    firestore.collection("collisions").add({ 
-        LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
-        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
-    });
-
-    getReports();
-    
     // var currentLongitude = position.coords.longitude;
     // var currentLatitude = position.coords.latitude;
 
@@ -175,7 +51,6 @@ $("#receiveData").click(function(){
 
     
 });
-*/
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -185,12 +60,10 @@ function getLocation() {
     }
 }
 
-/*function showPosition(position) {
+function showPosition(position) {
 
-    myLat = position.coords.latitude;
-    myLon = position.coords.longitude;
-
-    
+    var lat = position.coords.latitude;
+    var lon = position.coords.longitude;
     var latlon = new google.maps.LatLng(lat, lon)
     var mapVar = document.getElementById("postMap");
     mapVar.style.height = '250px';
@@ -245,5 +118,9 @@ function getLocation() {
         }
 
     });
-}*/
+}
+
+function showError(error) {
+    console.log("something failed");
+}
 
