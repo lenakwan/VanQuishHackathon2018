@@ -17,7 +17,7 @@
 
 // USER LOCATION TRACKING SECTION
 function showPosition(position) {
-    console.log("Updating my Location: " + position.coords);
+    console.log("Updating my Location: " + position.coords.latitude + ", " + position.coords.longitude);
     myLat = position.coords.latitude;
     myLon = position.coords.longitude;
 }
@@ -26,7 +26,7 @@ function showError(error) {
 }
 var options = {
   enableHighAccuracy: false,
-  timeout: 3000,
+  timeout: 5000,
   maximumAge: 0
 };
 
@@ -40,7 +40,6 @@ function init(){
 function timeout() {
     setTimeout(function () {
         if(myLat == undefined) {
-            console.log("Timeout-ing");
             timeout();
         }
         else {
@@ -89,7 +88,16 @@ function addMarkers(map, reports) {
         var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
         var marker = new google.maps.Marker({position:reportLatLon,
             map:map,
-            title:"Dangerous Driver!"});
+            animation: google.maps.Animation.DROP,
+            size: new google.maps.Size(10, 16),
+            title:'Dangerous Driver!'});
+        var infowindow = new google.maps.InfoWindow({
+          content: 'Dangerous driver reported at:' + "<br />" + reports[i][1],
+        });
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
         markers.push(marker);
     }
 }
