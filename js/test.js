@@ -1,18 +1,18 @@
 // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyA__unc1EqKKc5k-vQZ54j8DwESmquNU2M",
-    authDomain: "teampocky2018-1536380254596.firebaseapp.com",
-    databaseURL: "https://teampocky2018-1536380254596.firebaseio.com",
-    projectId: "teampocky2018-1536380254596",
-    storageBucket: "teampocky2018-1536380254596.appspot.com",
-    messagingSenderId: "124278017153"
-  };
+var config = {
+    apiKey: "AIzaSyB3PaSky2q1QOLA7ruDjjUubz4ZNbv-_-o",
+    authDomain: "byklistpolice.firebaseapp.com",
+    databaseURL: "https://byklistpolice.firebaseio.com",
+    projectId: "byklistpolice",
+    storageBucket: "byklistpolice.appspot.com",
+    messagingSenderId: "490807079267"
+};
   firebase.initializeApp(config);
   var firestore = firebase.firestore();
   var myLat, myLon;
   var map;
   var markers = [];
-  var reports;
+  var reports = [];
 
 
 // USER LOCATION TRACKING SECTION
@@ -32,24 +32,27 @@ var options = {
 
 navigator.geolocation.watchPosition(showPosition, showError, options);
 
-// Refresh map section
-function constantMapRefresh() {
-    setTimeout(function() {
-        if(map != null && map != undefined) {
-            getReports();
-            console.log("Refresh the map!");
-            constantMapRefresh();
-        }
-    }, 5000);
+// Set up listener for the database
+function setUpListener() {
+firestore.collection("collisions").onSnapshot(function(snapshot) {
+        snapshot.docChanges().forEach(function(change) {
+            if (change.type === "added") {
+                var newReport = change.doc.data();
+                reports.push([newReport.LatLon, newReport.Time]);
+                var newLatLon = new google.maps.LatLng(newReport.LatLon.latitude, newReport.LatLon.longitude);
+                var newTime = newReport.Time;
+                if(newLatLon !== undefined && newTime !== undefined) {
+                    addMarker(newLatLon, newTime);
+                }
+            }
+        });
+    });
 }
-
-
 
 
 function init(){
     getLocation();
     timeout();
-    constantMapRefresh();
 }
 
 function timeout() {
@@ -78,7 +81,7 @@ function initMap() {
     }
     
     map = new google.maps.Map(mapVar, myOptions);
-
+    
     var layer = new google.maps.FusionTablesLayer({
         query: {
             select: 'location',
@@ -99,6 +102,7 @@ function initMap() {
     layer.setMap(map);
 
     getReports();    
+    setUpListener();
 }
 
 function getReports() {
@@ -114,20 +118,6 @@ function getReports() {
 }
 
 function addMarkers(map, reports) {
-
-    function addMarker(latlon, time) {
-        var marker = new google.maps.Marker({position:reportLatLon,
-                map:map,
-                title:'Dangerous Driver!'});
-            var infowindow = new google.maps.InfoWindow({
-              content: 'Dangerous driver reported at:' + "<br />" + time,
-            });
-            marker.addListener('click', function() {
-              infowindow.open(map, marker);
-            });
-
-            markers.push(marker);
-    }
     
     for (var i = 0; i<reports.length; i++) {
         var needToAdd = true;
@@ -143,13 +133,25 @@ function addMarkers(map, reports) {
     }
 }
 
+function addMarker(latlon, time) {
+        var marker = new google.maps.Marker({position:latlon,
+                map:map,
+                title:'Dangerous Driver!'});
+            var infowindow = new google.maps.InfoWindow({
+              content: 'Dangerous driver reported at:' + "<br />" + time,
+            });
+            marker.addListener('click', function() {
+              infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+    }
+
 function reportDriver() {
     firestore.collection("collisions").add({ 
         LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
         Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
     });
-
-    getReports();
 }
     
 /*
