@@ -13,6 +13,16 @@
 	<h1 id="appName">Dangerous Drivers</h1>
 
 	<button id="sendData" onclick="reportDriver()">Send Report</button>
+
+	<label for="timeSelect">Choose a time interval for viewing reports</label>
+	<select id="timeSelect" onchange="getReports()">
+	  <option value="ALL">All Time</option>
+	  <option value="DAY">Within the last day</option>
+	  <option value="WEEK">Within the last week</option>
+	  <option value="MONTH">Within the last month</option>
+	  <option value="SIXMONTH">Within the last 6 months</option>
+	</select>
+
 	<br/>
 	<!-- <button id="receiveData">Click to get a map of all data</button> -->
 

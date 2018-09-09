@@ -89,12 +89,12 @@ function getReports() {
             querySnapshot.forEach(function(doc) {
                 reports.push([doc.data().LatLon, doc.data().Time]);
             })
-            addMarkers(map, reports);
+            addMarkers(map);
         });
 
 }
 
-function addMarkers(map, reports) {
+function addMarkers() {
 
     function addMarker(latlon, time) {
         var marker = new google.maps.Marker({position:reportLatLon,
@@ -121,6 +121,34 @@ function addMarkers(map, reports) {
         if(needToAdd) {
             addMarker(reportLatLon, reports[i][1]);
         }
+    }
+}
+
+function timeFilterReports() {
+    var selectVal = document.getElementById("timeSelect");
+
+    var filteredReports = [];
+    var dateToFilter = new Date();
+
+    switch(selectVal) {
+        case "DAY":
+            dateToFilter = dateToFilter - 86400000;
+            break;
+        case "WEEK":
+            dateToFilter = dateToFilter - (7 * 86400000);
+            break;
+        case "MONTH":
+            dateToFilter = dateToFilter - (31 * 86400000);
+            break;
+        case "SIXMONTH":
+            dateToFilter = dateToFilter - (6 * 31 * 86400000);
+            break;
+        default:
+            filteredReports = reports;
+            return;
+    }
+    for(var i = 0; i < reports.length; i++) {
+        var reportTime = reports[i][1];
     }
 }
 
