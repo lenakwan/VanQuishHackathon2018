@@ -95,6 +95,21 @@ function getReports() {
 }
 
 function addMarkers(map, reports) {
+
+    function addMarker(latlon, time) {
+        var marker = new google.maps.Marker({position:reportLatLon,
+                map:map,
+                title:'Dangerous Driver!'});
+            var infowindow = new google.maps.InfoWindow({
+              content: 'Dangerous driver reported at:' + "<br />" + time,
+            });
+            marker.addListener('click', function() {
+              infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+    }
+    
     for (var i = 0; i<reports.length; i++) {
         var needToAdd = true;
         var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
@@ -104,17 +119,7 @@ function addMarkers(map, reports) {
             }
         }
         if(needToAdd) {
-            var marker = new google.maps.Marker({position:reportLatLon,
-                map:map,
-                title:'Dangerous Driver!'});
-            var infowindow = new google.maps.InfoWindow({
-              content: 'Dangerous driver reported at:' + "<br />" + reports[i][1],
-            });
-            marker.addListener('click', function() {
-              infowindow.open(map, marker);
-            });
-
-            markers.push(marker);
+            addMarker(reportLatLon, reports[i][1]);
         }
     }
 }
