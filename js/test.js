@@ -13,6 +13,7 @@ var config = {
   var map;
   var markers = [];
   var reports = [];
+  var filteredReports = [];
 
 
 // USER LOCATION TRACKING SECTION
@@ -118,47 +119,55 @@ function getReports() {
 }
 
 
-function addMarkers(map, reports) {
+function addMarkers(map) {
+
+    for (var j =0; j < markers.length; j++) {
+        markers[j].setMap(null);
+    }
+    markers = [];
+
+    timeFilterReports();
     
-    for (var i = 0; i<reports.length; i++) {
+    for (var i = 0; i<filteredReports.length; i++) {
         var needToAdd = true;
-        var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
+        var reportLatLon = new google.maps.LatLng(filteredReports[i][0].latitude, filteredReports[i][0].longitude);
         for(var j = 0; j < markers.length; j++) {
             if(markers[j].getPosition() == reportLatLon) {
                 needToAdd = false;
             }
         }
         if(needToAdd) {
-            addMarker(reportLatLon, reports[i][1]);
+            addMarker(reportLatLon, filteredReports[i][1]);
         }
     }
 }
 
 function timeFilterReports() {
+    console.log(reports);
     var selectVal = document.getElementById("timeSelect");
-
-    var filteredReports = [];
     var dateToFilter = new Date();
-
-    switch(selectVal) {
+    filteredReports = [];
+    switch(selectVal.value) {
         case "DAY":
-            dateToFilter = dateToFilter - 86400000;
+            dateToFilter = new Date(dateToFilter - 86400000);
             break;
         case "WEEK":
-            dateToFilter = dateToFilter - (7 * 86400000);
+            dateToFilter = new Date(dateToFilter - (7 * 86400000));
             break;
         case "MONTH":
-            dateToFilter = dateToFilter - (31 * 86400000);
+            dateToFilter = new Date(dateToFilter - (31 * 86400000));
             break;
         case "SIXMONTH":
-            dateToFilter = dateToFilter - (6 * 31 * 86400000);
+            dateToFilter = new Date(dateToFilter - (6 * 31 * 86400000));
             break;
         default:
             filteredReports = reports;
             return;
     }
     for(var i = 0; i < reports.length; i++) {
-        var reportTime = reports[i][1];
+        if (new Date(reports[i][1]) > dateToFilter) {
+            filteredReports.push(reports[i]);
+        }
     }
 }
 
