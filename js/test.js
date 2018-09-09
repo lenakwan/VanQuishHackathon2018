@@ -1,11 +1,11 @@
 // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyA__unc1EqKKc5k-vQZ54j8DwESmquNU2M",
-    authDomain: "teampocky2018-1536380254596.firebaseapp.com",
-    databaseURL: "https://teampocky2018-1536380254596.firebaseio.com",
-    projectId: "teampocky2018-1536380254596",
-    storageBucket: "teampocky2018-1536380254596.appspot.com",
-    messagingSenderId: "124278017153"
+    apiKey: "AIzaSyB3PaSky2q1QOLA7ruDjjUubz4ZNbv-_-o",
+    authDomain: "byklistpolice.firebaseapp.com",
+    databaseURL: "https://byklistpolice.firebaseio.com",
+    projectId: "byklistpolice",
+    storageBucket: "byklistpolice.appspot.com",
+    messagingSenderId: "490807079267"
   };
   firebase.initializeApp(config);
   var firestore = firebase.firestore();
@@ -62,6 +62,8 @@ function timeout() {
         }
     }, 1000);
 }
+var layer;
+var heatMap;
 
 function initMap() {
     var latlon = new google.maps.LatLng(myLat, myLon)
@@ -79,7 +81,7 @@ function initMap() {
     
     map = new google.maps.Map(mapVar, myOptions);
 
-    var layer = new google.maps.FusionTablesLayer({
+    layer = new google.maps.FusionTablesLayer({
         query: {
             select: 'location',
             from: '1VibrAaLq_1nHsl9ay39b5vmlf0pQu_aseU5F_zz3'
@@ -96,10 +98,29 @@ function initMap() {
             }
         }]
     });
-    layer.setMap(map);
+    heatMap = layer.setMap(map);
+    heatMap;
 
     getReports();    
 }
+
+$(function(){
+    var heatMapOff = {
+      clicked: function(){
+        layer.setMap(null);
+      }
+    };
+    $('#heatMapOff')[0].onclick = heatMapOff.clicked;
+  });
+
+$(function(){
+var heatMapOn = {
+    clicked: function(){
+    layer.setMap(map);
+    }
+};
+$('#heatMapOn')[0].onclick = heatMapOn.clicked;
+});
 
 function getReports() {
     reports = [];
