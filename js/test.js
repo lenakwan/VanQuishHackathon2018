@@ -20,6 +20,14 @@ function showPosition(position) {
     console.log("Updating my Location: " + position.coords.latitude + ", " + position.coords.longitude);
     myLat = position.coords.latitude;
     myLon = position.coords.longitude;
+    if(map !== null) {
+        var myLatLng={lat: myLat, lng: myLon};
+        var marker1 = new google.maps.Marker({
+        position:myLatLng,
+        map:map,
+        title:'Me!'
+    });
+    }
 }
 function showError(error) {
     console.log("something failed");
@@ -31,6 +39,17 @@ var options = {
 };
 
 navigator.geolocation.watchPosition(showPosition, showError, options);
+
+/*
+var watchID = navigator.geolocation.watchPosition(function(position){
+    var myLatLng={lat: position.coords.latitude, lng: position.coords.latitude};
+    var marker1 = new google.maps.Marker({
+        position:myLatLng,
+        map:map,
+        title:'Me!'
+    });
+})*/
+
 
 // Set up listener for the database
 function setUpListener() {
@@ -118,7 +137,7 @@ function getReports() {
 }
 
 
-function addMarkers(map, reports) {
+function addMarkers(map) {
     
     for (var i = 0; i<reports.length; i++) {
         var needToAdd = true;
@@ -166,6 +185,7 @@ function addMarker(latlon, time) {
         var marker = new google.maps.Marker({position:latlon,
                 map:map,
                 title:'Dangerous Driver!'});
+            marker.setIcon("greenmarker.png");
             var infowindow = new google.maps.InfoWindow({
               content: 'Dangerous driver reported at:' + "<br />" + time,
             });
