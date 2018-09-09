@@ -66,8 +66,8 @@ function timeout() {
 function initMap() {
     var latlon = new google.maps.LatLng(myLat, myLon)
     var mapVar = document.getElementById("postMap");
-    mapVar.style.height = '400px';
-    mapVar.style.width = '500px';
+    mapVar.style.height = '500px';
+    mapVar.style.width = '600px';
 
     var myOptions = {
         center:latlon,
@@ -78,6 +78,25 @@ function initMap() {
     }
     
     map = new google.maps.Map(mapVar, myOptions);
+
+    var layer = new google.maps.FusionTablesLayer({
+        query: {
+            select: 'location',
+            from: '1VibrAaLq_1nHsl9ay39b5vmlf0pQu_aseU5F_zz3'
+        },
+        heatmap: {
+            enabled: true
+        },
+        styles: [{
+            where: 'Modes Veh-Ped',
+            polygonOptions: {
+                fillColor: '#0000FF',
+                fillOpacity: 0.9
+
+            }
+        }]
+    });
+    layer.setMap(map);
 
     getReports();    
 }
