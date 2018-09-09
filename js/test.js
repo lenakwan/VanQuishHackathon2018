@@ -218,10 +218,18 @@ function addMarker(latlon, time) {
     }
 
 function reportDriver() {
-    firestore.collection("collisions").add({ 
+    firestore.collection("collisions").add({
         LatLon: new firebase.firestore.GeoPoint(myLat, myLon),
-        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime()/1000), 0)
+        Time: new firebase.firestore.Timestamp(Math.round(new Date().getTime() / 1000), 0)
     });
+    console.log("Report sent");
+    var hiddenM = document.getElementById("hiddenMessage");
+    if (hiddenM.style.display === "none") {
+        hiddenM.style.display = "block";
+    } else {
+        hiddenM.style.display = "none";
+    }
+
 }
 
 function getLocation() {
