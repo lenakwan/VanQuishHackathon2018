@@ -13,23 +13,27 @@
 	<h1 id="appName">Dangerous Drivers</h1>
 
 	<button id="sendData" onclick="reportDriver()">Send Report</button>
-	<button id="heatMapOff" onclick="heatMapOff()">Heat Map Off</button>
-	<button id="heatMapOn" onclick="heatMapOn()">Heat Map On</button>
 
-	<label for="timeSelect">Choose a time interval for viewing reports</label>
-	<select id="timeSelect" onchange="addMarkers()">
-	  <option value="ALL">All Time</option>
-	  <option value="DAY">Within the last day</option>
-	  <option value="WEEK">Within the last week</option>
-	  <option value="MONTH">Within the last month</option>
-	  <option value="SIXMONTH">Within the last 6 months</option>
-	</select>
+	<div class="time-interval">
+		<label for="timeSelect">Choose a time interval for viewing reports</label>
+		<select id="timeSelect" onchange="addMarkers()">
+			<option value="ALL">All Time</option>
+			<option value="DAY">Within the last day</option>
+			<option value="WEEK">Within the last week</option>
+			<option value="MONTH">Within the last month</option>
+			<option value="SIXMONTH">Within the last 6 months</option>
+		</select>
+	</div>
 
 	<br/>
 	<!-- <button id="receiveData">Click to get a map of all data</button> -->
 
 	<div id="postMap"></div>
 	<div id="receivedMap"></div>
+	<div class="heat-button-container">
+		<button id="heatMapOff" onclick="heatMapOff()">Heat Map Off</button>
+		<button id="heatMapOn" onclick="heatMapOn()">Heat Map On</button>
+	</div>
 </body>
 
 </html>

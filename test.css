@@ -1,3 +1,14 @@
+body {
+	font-family: Gadget, sans-serif;
+}
+
+#appName {
+	font-size: 32pt;
+	text-align: center;
+	margin: 10px auto;
+	display: block;
+}
+
 #sendData {
 	border: solid 2px black;
 	color: black;
@@ -11,10 +22,26 @@
 	background: #db746b;
 }
 
-#appName {
-	font-size: 4vw;
-	text-align: center;
+#postMap {
 	margin: 0 auto;
-	display: block;
+}
 
+.heat-button-container {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+#heatMapOn,
+#heatMapOff {
+	margin: 10px;
+    font-size: 12pt;
+    padding: 10px;
+}
+
+.time-interval {
+	display: flex;
+    margin: 16pt 0 0 0;
+    justify-content: center;
+    font-size: 16pt;
 }
