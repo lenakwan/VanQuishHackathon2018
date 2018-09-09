@@ -118,7 +118,7 @@ function initMap() {
 
     getReports();    
     setUpListener();
-}
+};
 
 $(function(){
     var heatMapOff = {
