@@ -1,31 +1,26 @@
 // Initialize Firebase
-<<<<<<< HEAD
-  var config = {
-=======
+
 var config = {
->>>>>>> e672f650540770205e8417b2a7eb0949b21adfbc
     apiKey: "AIzaSyB3PaSky2q1QOLA7ruDjjUubz4ZNbv-_-o",
     authDomain: "byklistpolice.firebaseapp.com",
     databaseURL: "https://byklistpolice.firebaseio.com",
     projectId: "byklistpolice",
     storageBucket: "byklistpolice.appspot.com",
     messagingSenderId: "490807079267"
-<<<<<<< HEAD
-  };
-=======
 };
->>>>>>> e672f650540770205e8417b2a7eb0949b21adfbc
+
+
   firebase.initializeApp(config);
   var firestore = firebase.firestore();
   var myLat, myLon;
   var map;
   var markers = [];
   var reports = [];
+  var filteredReports = [];
 
 
 // USER LOCATION TRACKING SECTION
 function showPosition(position) {
-    console.log("Updating my Location: " + position.coords.latitude + ", " + position.coords.longitude);
     myLat = position.coords.latitude;
     myLon = position.coords.longitude;
 }
@@ -141,23 +136,59 @@ function getReports() {
             querySnapshot.forEach(function(doc) {
                 reports.push([doc.data().LatLon, doc.data().Time]);
             })
-            addMarkers(map, reports);
+            addMarkers(map);
         });
 
 }
 
-function addMarkers(map, reports) {
+
+function addMarkers(map) {
+
+    for (var j =0; j < markers.length; j++) {
+        markers[j].setMap(null);
+    }
+    markers = [];
+
+    timeFilterReports();
     
-    for (var i = 0; i<reports.length; i++) {
+    for (var i = 0; i<filteredReports.length; i++) {
         var needToAdd = true;
-        var reportLatLon = new google.maps.LatLng(reports[i][0].latitude, reports[i][0].longitude);
+        var reportLatLon = new google.maps.LatLng(filteredReports[i][0].latitude, filteredReports[i][0].longitude);
         for(var j = 0; j < markers.length; j++) {
             if(markers[j].getPosition() == reportLatLon) {
                 needToAdd = false;
             }
         }
         if(needToAdd) {
-            addMarker(reportLatLon, reports[i][1]);
+            addMarker(reportLatLon, filteredReports[i][1]);
+        }
+    }
+}
+
+function timeFilterReports() {
+    var selectVal = document.getElementById("timeSelect");
+    var dateToFilter = new Date();
+    filteredReports = [];
+    switch(selectVal.value) {
+        case "DAY":
+            dateToFilter = new Date(dateToFilter - 86400000);
+            break;
+        case "WEEK":
+            dateToFilter = new Date(dateToFilter - (7 * 86400000));
+            break;
+        case "MONTH":
+            dateToFilter = new Date(dateToFilter - (31 * 86400000));
+            break;
+        case "SIXMONTH":
+            dateToFilter = new Date(dateToFilter - (6 * 31 * 86400000));
+            break;
+        default:
+            filteredReports = reports;
+            return;
+    }
+    for(var i = 0; i < reports.length; i++) {
+        if (new Date(reports[i][1]) > dateToFilter) {
+            filteredReports.push(reports[i]);
         }
     }
 }
